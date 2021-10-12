@@ -1,0 +1,6 @@
+.vscode/
+venv/
+setup.cfg
+linter.txt
+setup.cfg
+db.sqlite3

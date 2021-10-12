@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: python manage.py runserver 0:8000
+    container_name: web
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+    env_file:
+      - ./.env
+
+  celery:
+    build: .
+    container_name: celery
+    command: celery -A api_weather worker -l INFO --pool=solo
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+
+  celery-beat:
+    build: .
+    container_name: celery-beat
+    command: celery -A api_weather beat -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
